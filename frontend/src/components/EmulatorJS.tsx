@@ -55,14 +55,14 @@ const EmulatorJS: React.FC<EmulatorJSProps> = ({
       return originalFetch.apply(this, args);
     };
 
-    // 브라우저 언어 감지 비활성화
+    // 브라우저 언어 감지 비활성화 (강제로 영어 설정)
     Object.defineProperty(navigator, 'language', {
       writable: true,
-      value: 'en'
+      value: 'en-US'
     });
     Object.defineProperty(navigator, 'languages', {
       writable: true,
-      value: ['en']
+      value: ['en-US', 'en']
     });
     
     // IndexedDB 관련 오류 전역 처리
@@ -101,7 +101,7 @@ const EmulatorJS: React.FC<EmulatorJSProps> = ({
     window.EJS_multitap = multitap;
     window.EJS_loadStateOnStart = loadStateOnStart;
     window.EJS_pathtodata = pathtodata;
-    window.EJS_language = language;
+    window.EJS_language = 'en-US'; // 강제로 영어 설정
 
     // 콜백 설정
     window.EJS_onGameStart = () => {
