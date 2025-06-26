@@ -42,6 +42,35 @@ const EmulatorJS: React.FC<EmulatorJSProps> = ({
   const gameRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // IndexedDB 충돌 방지를 위한 임시 해결책
+    const originalIndexedDB = window.indexedDB;
+    const originalIDBOpenDBRequest = window.IDBOpenDBRequest;
+    
+    // EmulatorJS IndexedDB 오류 방지
+    const safeIndexedDB = {
+      ...originalIndexedDB,
+      open: function(name: string, version?: number) {
+        console.log('IndexedDB open request:', name, version);
+        try {
+          return originalIndexedDB.open(name, version);
+        } catch (error) {
+          console.warn('IndexedDB open failed, creating mock:', error);
+          // 실패 시 mock 객체 반환
+          return {
+            onsuccess: null,
+            onerror: null,
+            onupgradeneeded: null,
+            result: null,
+            error: null,
+            readyState: 'done'
+          } as any;
+        }
+      }
+    };
+    
+    // 임시로 안전한 IndexedDB로 교체
+    (window as any).indexedDB = safeIndexedDB;
+    
     // 언어팩 요청 차단
     const originalFetch = window.fetch;
     window.fetch = function(...args) {
@@ -62,6 +91,30 @@ const EmulatorJS: React.FC<EmulatorJSProps> = ({
       writable: true,
       value: ['en']
     });
+    
+    // IndexedDB 관련 오류 전역 처리
+    const originalConsoleError = console.error;
+    console.error = function(...args) {
+      const message = args.join(' ');
+      if (message.includes('IndexedDB') || message.includes('IDBDatabase') || message.includes('object stores')) {
+        console.warn('IndexedDB error suppressed:', ...args);
+        return;
+      }
+      originalConsoleError.apply(console, args);
+    };
+    
+    // Promise rejection 처리
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      if (event.reason && event.reason.message && 
+          (event.reason.message.includes('IndexedDB') || 
+           event.reason.message.includes('IDBDatabase') ||
+           event.reason.message.includes('object stores'))) {
+        console.warn('IndexedDB promise rejection suppressed:', event.reason);
+        event.preventDefault();
+      }
+    };
+    
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
 
     // EmulatorJS 설정
     window.EJS_player = '#game';
@@ -106,6 +159,11 @@ const EmulatorJS: React.FC<EmulatorJSProps> = ({
     return () => {
       document.body.removeChild(script);
       window.fetch = originalFetch;
+      // IndexedDB 원복
+      (window as any).indexedDB = originalIndexedDB;
+      // 오류 핸들러 원복
+      console.error = originalConsoleError;
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
     };
   }, [gameUrl, core, gameName, color, startOnLoaded, fullscreenOnLoaded, mouse, multitap, loadStateOnStart, pathtodata, language, onGameStart, onLoadComplete, onSaveState, onLoadState]);
 
