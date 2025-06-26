@@ -204,6 +204,36 @@ export const gameSettings: GameConfig[] = [
     gamePath: "games/snes/Street Fighter Alpha 2 (USA).sfc",
     description: "캡콤의 최고 격투 게임 - 알파 시리즈의 걸작"
   },
+  {
+    id: 'super-mario-rpg-snes',
+    name: "슈퍼 마리오 RPG",
+    version: "USA",
+    console: 'snes',
+    core: 'snes9x',
+    gameFile: "Super Mario RPG (USA).smc",
+    gamePath: "games/snes/Super Mario RPG (USA).smc",
+    description: "닌텐도와 스퀘어의 협작 RPG 명작 - 마리오의 첫 RPG"
+  },
+  {
+    id: 'super-bomberman-5-snes',
+    name: "슈퍼 봄버맨 5 골드",
+    version: "Japan",
+    console: 'snes',
+    core: 'snes9x',
+    gameFile: "Super Bomberman 5 Gold Cartridge (J) .zip",
+    gamePath: "games/snes/Super Bomberman 5 Gold Cartridge (J) .zip",
+    description: "허드슨의 봄버맨 시리즈 - ZIP 압축 파일 테스트용"
+  },
+  {
+    id: 'metal-slug-advance-gba',
+    name: "메탈 슬러그 어드밴스",
+    version: "USA",
+    console: 'gba',
+    core: 'mgba',
+    gameFile: "Metal Slug Advance.gba",
+    gamePath: "games/gba/Metal Slug Advance.gba",
+    description: "SNK의 메탈 슬러그 시리즈 GBA 버전 - 액션 슈팅의 명작"
+  },
  
   {
     id: 'water2-dos',
