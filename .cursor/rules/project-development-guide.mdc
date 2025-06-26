@@ -1,5 +1,160 @@
 ---
-description:
-globs:
+description: 
+globs: 
 alwaysApply: false
 ---
+# DOSBox 웹 에뮬레이터 프로젝트 개발 가이드
+
+## 🎯 **프로젝트 목표**
+**자동으로 게임이 실행되도록 최선의 노력을 다한다**
+
+## 📁 **프로젝트 구조**
+
+### **Frontend (React + Vite)**
+- **메인 앱**: [frontend/src/App.tsx](mdc:frontend/src/App.tsx)
+- **게임 선택**: [frontend/src/components/GameSelector.tsx](mdc:frontend/src/components/GameSelector.tsx)  
+- **에뮬레이터**: [frontend/src/components/EmulatorJS.tsx](mdc:frontend/src/components/EmulatorJS.tsx)
+- **Vite 설정**: [frontend/vite.config.ts](mdc:frontend/vite.config.ts)
+- **패키지 설정**: [frontend/package.json](mdc:frontend/package.json)
+
+### **DOSBox (unchartedwaters2 서브모듈)**
+- **게임 컴포넌트**: [unchartedwaters2/src/components/Game.tsx](mdc:unchartedwaters2/src/components/Game.tsx)
+- **DOSBox 생성**: [unchartedwaters2/src/dos/create-dos.ts](mdc:unchartedwaters2/src/dos/create-dos.ts)
+- **파일 시스템**: [unchartedwaters2/src/fs/create-idb-file-system.ts](mdc:unchartedwaters2/src/fs/create-idb-file-system.ts)
+
+### **게임 파일**
+- **SNES 롬**: [frontend/public/games/](mdc:frontend/public/games)
+- **DOS 게임**: [unchartedwaters2/static/game/](mdc:unchartedwaters2/static/game)
+
+## 🚀 **개발 명령어**
+
+### **Frontend (React + Vite)**
+```bash
+cd frontend
+
+# 개발 서버 실행 (빠른 시작: ~161ms)
+npm run dev
+
+# 프로덕션 빌드 (빠른 빌드: ~632ms)
+npm run build
+
+# 빌드 미리보기
+npm run preview
+
+# 의존성 설치
+npm install
+```
+
+### **DOSBox 서브모듈**
+```bash
+cd unchartedwaters2
+
+# 개발 서버 실행
+npm run dev
+
+# 프로덕션 빌드
+npm run build
+```
+
+## ⚡ **성능 최적화**
+
+### **1. 로컬 게임 캐싱**
+- **IndexedDB 활용**: 게임 파일을 브라우저에 캐싱
+- **빠른 재로딩**: 두 번째 실행부터 초고속 로딩
+- **오프라인 지원**: 캐시된 게임은 오프라인 실행 가능
+
+### **2. Vite의 장점**
+- **개발 서버**: HMR로 즉시 반영
+- **빠른 빌드**: ES 모듈 기반 최적화
+- **코드 분할**: 필요한 부분만 로드
+
+### **3. 게임 파일 관리**
+- **정적 파일 서빙**: nginx를 통한 효율적 배포
+- **압축 최적화**: gzip 압축으로 전송 속도 향상
+
+## 🎮 **게임 시스템**
+
+### **지원하는 에뮬레이터**
+1. **DOSBox**: DOS 게임 실행 (js-dos 사용)
+2. **EmulatorJS**: 레트로 콘솔 게임 (SNES, NES 등)
+
+### **게임 추가 방법**
+
+#### **SNES 게임 추가**
+1. ROM 파일을 [frontend/public/games/](mdc:frontend/public/games)에 배치
+2. [frontend/src/components/GameSelector.tsx](mdc:frontend/src/components/GameSelector.tsx)에 게임 설정 추가
+3. 자동으로 EmulatorJS에서 인식
+
+#### **DOS 게임 추가**
+1. ZIP 파일을 [unchartedwaters2/static/game/](mdc:unchartedwaters2/static/game)에 배치
+2. [unchartedwaters2/src/components/Splash.tsx](mdc:unchartedwaters2/src/components/Splash.tsx)에 게임 설정 추가
+3. js-dos에서 자동 추출 및 실행
+
+## 🛠️ **개발 시 주의사항**
+
+### **1. 파일 수정 전 권한 확인**
+```bash
+# 파일 권한 확인 필수
+ls -la [파일경로]
+
+# root 소유 파일일 경우 권한 변경
+sudo chown purestory:purestory [파일경로]
+```
+
+### **2. nginx 설정 수정 시**
+- **백업 생성**: [tmp/](mdc:tmp)에 편집용 파일 생성
+- **변경사항 확인**: diff 명령으로 실제 변경 여부 확인
+- **설정 검증**: `nginx -t`로 검증 후 적용
+
+### **3. 빌드 후 배포**
+```bash
+# Frontend 빌드
+cd frontend && npm run build
+
+# nginx reload는 설정 변경 시에만!
+# 단순 빌드는 정적 파일만 교체되므로 reload 불필요
+```
+
+## 🔧 **트러블슈팅**
+
+### **개발 서버 포트 충돌**
+- Vite는 자동으로 다른 포트 찾기 (3001, 3002 등)
+- 특정 포트 지정: `--port 4000`
+
+### **TypeScript 에러**
+- Node.js 타입: `@types/node@^20.0.0` 사용
+- 모듈 해석: `moduleResolution: "node"` 설정
+
+### **게임 로딩 실패**
+- 브라우저 개발자 도구 콘솔 확인
+- 네트워크 탭에서 파일 다운로드 상태 확인
+- IndexedDB 캐시 확인
+
+## 📝 **코딩 스타일**
+
+### **React 컴포넌트**
+- 함수형 컴포넌트 사용
+- Hooks 적극 활용 (useState, useEffect, useCallback)
+- TypeScript 타입 정의 필수
+
+### **파일 명명 규칙**
+- 컴포넌트: PascalCase (GameSelector.tsx)
+- 유틸리티: camelCase (create-dos.ts)
+- 타입 정의: interfaces.ts
+
+### **성능 고려사항**
+- useCallback으로 함수 메모이제이션
+- useMemo로 값 메모이제이션
+- 불필요한 리렌더링 방지
+
+## 🚨 **절대 금지사항**
+
+1. **개발 서버 무분별 실행**: 이미 실행 중인지 확인 후 실행
+2. **nginx 무의미한 reload**: 설정 변경 없이 reload 금지
+3. **권한 확인 없이 파일 수정**: 항상 ls -la로 권한 확인
+4. **직접 프로덕션 수정**: 반드시 [tmp/](mdc:tmp)에서 편집 후 적용
+5. **캐시 무시**: 게임 캐싱 시스템 활용 필수
+
+---
+
+**⚡ 빠르고 안정적인 게임 경험을 위한 필수 가이드라인**

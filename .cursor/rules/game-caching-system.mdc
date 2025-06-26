@@ -1,5 +1,174 @@
 ---
-description:
-globs:
+description: 
+globs: 
 alwaysApply: false
 ---
+# 게임 파일 캐싱 시스템 가이드
+
+## 🚀 **로컬 캐싱 시스템 개요**
+
+### **캐싱 시스템의 장점**
+- **초고속 로딩**: 두 번째 실행부터 네트워크 없이 즉시 로딩
+- **오프라인 지원**: 인터넷 연결 없이도 캐시된 게임 실행 가능
+- **대역폭 절약**: 한 번 다운로드한 게임은 재다운로드 불필요
+- **사용자 경험 향상**: 로딩 시간 대폭 단축
+
+### **기술 구현**
+- **IndexedDB**: 브라우저 로컬 스토리지 활용
+- **게임 파일 압축**: ZIP 파일 형태로 효율적 저장
+- **메타데이터 관리**: 버전, 크기, 마지막 접근 시간 추적
+
+## 📁 **캐싱 아키텍처**
+
+### **DOSBox 게임 캐싱 (unchartedwaters2)**
+- **파일 시스템**: [unchartedwaters2/src/fs/create-idb-file-system.ts](mdc:unchartedwaters2/src/fs/create-idb-file-system.ts)
+- **게임 로더**: [unchartedwaters2/src/components/Game.tsx](mdc:unchartedwaters2/src/components/Game.tsx)
+- **게임 파일**: [unchartedwaters2/static/game/](mdc:unchartedwaters2/static/game)
+
+```typescript
+// 현재 구현된 캐싱 시스템
+export interface IdbFileSystem {
+  delete(key: string): Promise<void>;
+  save(key: string, data: Uint8Array): Promise<void>;  
+  load(key: string): Promise<Uint8Array | null>;
+}
+```
+
+### **SNES 게임 (EmulatorJS)**
+- **게임 선택기**: [frontend/src/components/GameSelector.tsx](mdc:frontend/src/components/GameSelector.tsx)
+- **에뮬레이터**: [frontend/src/components/EmulatorJS.tsx](mdc:frontend/src/components/EmulatorJS.tsx)
+- **ROM 파일**: [frontend/public/games/](mdc:frontend/public/games)
+
+## ⚡ **캐싱 최적화 전략**
+
+### **1. 현재 구현된 기능**
+```typescript
+// DOSBox 게임 캐싱 (기존 코드)
+const start = useCallback(async () => {
+  const db = await createIdbFileSystem(mod, 1);
+  const { fs, main } = await createDos(canvas.current!);
+  
+  // 게임 파일 추출
+  await fs.extract(`/static/game/${gameFile}`);
+  
+  // 세이브 파일 캐싱
+  const saveFileBody = await db.load(saveFile);
+  if (saveFileBody) {
+    fs.fs.writeFile(saveFile, saveFileBody);
+  }
+}, []);
+```
+
+### **2. 향상된 캐싱 시스템 구현 방안**
+```typescript
+// 제안하는 확장된 캐싱 시스템
+export interface GameCache {
+  // 게임 zip 파일 캐싱
+  cacheGameFile(gameFile: string, data: Uint8Array): Promise<void>;
+  getCachedGameFile(gameFile: string): Promise<Uint8Array | null>;
+  
+  // 추출된 파일들 캐싱  
+  cacheExtractedFiles(gameFile: string, files: Map<string, Uint8Array>): Promise<void>;
+  getCachedExtractedFiles(gameFile: string): Promise<Map<string, Uint8Array> | null>;
+  
+  // 캐시 상태 확인
+  isGameCached(gameFile: string): Promise<boolean>;
+}
+```
+
+### **3. 로딩 플로우 최적화**
+```typescript
+// 빠른 로딩을 위한 캐시 우선 로딩
+const optimizedStart = async () => {
+  const gameCache = await createGameCache(mod);
+  
+  if (await gameCache.isGameCached(gameFile)) {
+    // 캐시에서 즉시 로드
+    const cachedFiles = await gameCache.getCachedExtractedFiles(gameFile);
+    for (const [fileName, fileData] of cachedFiles) {
+      fs.fs.writeFile(fileName, fileData);
+    }
+    showToast("💨 캐시에서 빠르게 로딩!");
+  } else {
+    // 첫 로딩 + 캐싱
+    await fs.extract(`/static/game/${gameFile}`);
+    await cacheExtractedFiles();
+    showToast("✅ 다음부터는 빠르게 로딩됩니다!");
+  }
+};
+```
+
+## 🎮 **게임별 캐싱 전략**
+
+### **DOS 게임 (DOSBox)**
+1. **ZIP 파일 다운로드** → IndexedDB 저장
+2. **파일 추출** → 개별 파일들도 캐싱
+3. **세이브 파일** → 자동 백업/복원
+4. **설정 파일** → 사용자 설정 보존
+
+### **SNES 게임 (EmulatorJS)**
+1. **ROM 파일** → 브라우저 캐시 활용
+2. **세이브 스테이트** → LocalStorage 저장
+3. **설정** → 키 매핑, 화면 설정 등
+
+## 🔧 **캐시 관리 기능**
+
+### **1. 용량 관리**
+```typescript
+// 캐시 크기 제한 예시
+const MAX_CACHE_SIZE = 500 * 1024 * 1024; // 500MB
+
+async function cleanupCache() {
+  const cacheSize = await getCacheSize();
+  if (cacheSize > MAX_CACHE_SIZE) {
+    // LRU 방식으로 오래된 게임 삭제
+    await removeOldestGames();
+  }
+}
+```
+
+### **2. 캐시 상태 UI**
+- 캐시된 게임 목록 표시
+- 캐시 크기 및 사용량 표시
+- 개별 게임 캐시 삭제 기능
+- 전체 캐시 초기화 기능
+
+### **3. 버전 관리**
+```typescript
+interface CacheMetadata {
+  version: string;
+  timestamp: number;
+  fileSize: number;
+  lastAccessed: number;
+}
+```
+
+## 🚨 **캐싱 시스템 주의사항**
+
+### **절대 하지 말 것**
+1. **캐시 무시하고 매번 다운로드**: 네트워크 낭비
+2. **캐시 공간 무제한 사용**: 브라우저 저장소 고갈
+3. **캐시 검증 없이 사용**: 손상된 파일 로드 위험
+4. **동기적 캐시 작업**: UI 블로킹 발생
+
+### **반드시 할 것**
+1. **캐시 상태 확인**: 로딩 전 캐시 여부 체크
+2. **에러 핸들링**: 캐시 실패 시 원본 다운로드
+3. **용량 모니터링**: 정기적 캐시 정리
+4. **사용자 알림**: 캐시 상태 사용자에게 표시
+
+## 📊 **성능 메트릭**
+
+### **로딩 시간 비교**
+- **첫 로딩**: 네트워크 속도에 따라 5-30초
+- **캐시 로딩**: 1-3초 (90% 이상 단축)
+- **세이브 로딩**: 즉시 (< 1초)
+
+### **저장 공간 효율성**
+- **압축률**: ZIP 압축으로 30-50% 공간 절약
+- **중복 제거**: 공통 파일 공유로 추가 절약
+- **메타데이터**: 최소한의 오버헤드
+
+---
+
+**🎮 게임을 기다리지 않고 바로 즐기는 캐싱 시스템**
