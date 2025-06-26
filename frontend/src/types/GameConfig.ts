@@ -28,7 +28,7 @@ export const consoleConfigs: ConsoleConfig[] = [
     name: 'Super Nintendo',
     folder: 'snes',
     cores: ['snes9x'],
-    fileExtensions: ['.smc', '.sfc', '.fig'],
+    fileExtensions: ['.smc', '.sfc', '.fig', '.zip'],
     description: 'Super Nintendo Entertainment System',
     icon: '🎮'
   },
@@ -153,6 +153,36 @@ export const gameSettings: GameConfig[] = [
     gameFile: "lionk.smc",
     gamePath: "games/snes/lionk.smc",
     description: "디즈니의 라이온 킹 SNES 버전 - 정품 롬파일"
+  },
+  {
+    id: 'mario-allstars-snes',
+    name: "슈퍼 마리오 올스타즈 + 슈퍼 마리오 월드",
+    version: "1993",
+    console: 'snes',
+    core: 'snes9x',
+    gameFile: "Super Mario All-Stars + Super Mario World.zip",
+    gamePath: "games/snes/Super Mario All-Stars + Super Mario World.zip",
+    description: "닌텐도의 명작 마리오 시리즈 합본팩"
+  },
+  {
+    id: 'super-pang-snes',
+    name: "슈퍼 팡",
+    version: "European",
+    console: 'snes',
+    core: 'snes9x',
+    gameFile: "Super Pang (E).zip",
+    gamePath: "games/snes/Super Pang (E).zip",
+    description: "캡콤의 클래식 액션 퍼즐 게임"
+  },
+  {
+    id: 'outrun-snes',
+    name: "아웃런",
+    version: "SNES",
+    console: 'snes',
+    core: 'snes9x',
+    gameFile: "outrun.zip",
+    gamePath: "games/snes/outrun.zip",
+    description: "세가의 전설적인 레이싱 게임"
   },
   {
     id: 'water2-dos',
