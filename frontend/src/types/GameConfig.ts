@@ -154,7 +154,7 @@ export const gameSettings: GameConfig[] = [
     gamePath: "games/snes/lionk.smc",
     description: "디즈니의 라이온 킹 SNES 버전 - 정품 롬파일"
   },
-  {
+    {
     id: 'mario-allstars-snes',
     name: "슈퍼 마리오 올스타즈 + 슈퍼 마리오 월드",
     version: "1993",
@@ -164,7 +164,47 @@ export const gameSettings: GameConfig[] = [
     gamePath: "games/snes/Super Mario All-Stars + Super Mario World (USA).sfc",
     description: "닌텐도의 명작 마리오 시리즈 합본팩"
   },
-
+  {
+    id: 'captain-commando-snes',
+    name: "캡틴 코만도",
+    version: "USA",
+    console: 'snes',
+    core: 'snes9x',
+    gameFile: "Captain Commando (USA).sfc",
+    gamePath: "games/snes/Captain Commando (USA).sfc",
+    description: "캡콤의 사이드 스크롤 액션 게임 - 미래 지구를 구하라!"
+  },
+  {
+    id: 'fatal-fury-2-snes',
+    name: "아랑전설 2",
+    version: "USA",
+    console: 'snes',
+    core: 'snes9x',
+    gameFile: "Fatal Fury 2 (USA).sfc",
+    gamePath: "games/snes/Fatal Fury 2 (USA).sfc",
+    description: "SNK의 전설적인 격투 게임 시리즈"
+  },
+  {
+    id: 'prince-persia-snes',
+    name: "페르시아의 왕자",
+    version: "USA",
+    console: 'snes',
+    core: 'snes9x',
+    gameFile: "Prince of Persia (USA).sfc",
+    gamePath: "games/snes/Prince of Persia (USA).sfc",
+    description: "클래식 액션 어드벤처 게임의 명작"
+  },
+  {
+    id: 'street-fighter-alpha-2-snes',
+    name: "스트리트 파이터 알파 2",
+    version: "USA",
+    console: 'snes',
+    core: 'snes9x',
+    gameFile: "Street Fighter Alpha 2 (USA).sfc",
+    gamePath: "games/snes/Street Fighter Alpha 2 (USA).sfc",
+    description: "캡콤의 최고 격투 게임 - 알파 시리즈의 걸작"
+  },
+ 
   {
     id: 'water2-dos',
     name: "대항해시대 2",
