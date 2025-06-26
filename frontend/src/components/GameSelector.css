@@ -41,6 +41,41 @@
   backdrop-filter: blur(10px);
 }
 
+/* 섹션 타이틀 스타일 */
+.game-selector__section-title {
+  text-align: center;
+  margin-bottom: 25px;
+  border-bottom: 1px solid rgba(255, 107, 53, 0.3);
+  padding-bottom: 15px;
+}
+
+.game-selector__section-title h2 {
+  color: #ff6b35;
+  font-size: 1.5rem;
+  margin: 10px 0 0 0;
+  text-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
+}
+
+/* 뒤로가기 버튼 */
+.back-button {
+  background: transparent;
+  border: 1px solid rgba(255, 107, 53, 0.5);
+  color: #ff6b35;
+  padding: 8px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  margin-bottom: 10px;
+}
+
+.back-button:hover {
+  background: rgba(255, 107, 53, 0.2);
+  border-color: #ff6b35;
+  transform: translateY(-2px);
+}
+
 .corner {
   position: absolute;
   width: 20px;
@@ -102,6 +137,17 @@
   transform: translateX(3px);
 }
 
+/* 콘솔 아이템 특별 스타일 */
+.console-item {
+  border-left: 4px solid transparent;
+  position: relative;
+}
+
+.console-item:hover {
+  border-left-color: #ff6b35;
+  background: linear-gradient(90deg, rgba(255, 107, 53, 0.1) 0%, rgba(255, 107, 53, 0.05) 100%);
+}
+
 .game-selector__item-content {
   display: flex;
   justify-content: space-between;
@@ -109,9 +155,17 @@
   margin-bottom: 5px;
 }
 
+/* 콘솔 아이콘 */
+.console-icon {
+  font-size: 1.5rem;
+  margin-right: 10px;
+  filter: drop-shadow(0 0 5px rgba(255, 107, 53, 0.3));
+}
+
 .game-selector__item-name {
   font-size: 1.2rem;
   font-weight: bold;
+  flex: 1;
 }
 
 .game-selector__item-version {
@@ -120,11 +174,40 @@
   font-style: italic;
 }
 
+/* 게임 개수 표시 */
+.game-count {
+  font-size: 0.85rem;
+  color: #00ff88;
+  background: rgba(0, 255, 136, 0.1);
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
 .game-selector__item-description {
   font-size: 0.85rem;
   color: #cccccc;
   margin: 0;
   opacity: 0.8;
+  line-height: 1.4;
+}
+
+/* 스크롤바 스타일 */
+.game-selector__menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.game-selector__menu::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.game-selector__menu::-webkit-scrollbar-thumb {
+  background: rgba(255, 107, 53, 0.5);
+  border-radius: 3px;
+}
+
+.game-selector__menu::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 107, 53, 0.8);
 }
 
 @media (max-width: 768px) {
@@ -139,5 +222,18 @@
   
   .game-selector__item {
     padding: 12px 15px;
+  }
+  
+  .console-icon {
+    font-size: 1.3rem;
+  }
+  
+  .game-selector__item-content {
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  
+  .game-count {
+    font-size: 0.8rem;
   }
 } 

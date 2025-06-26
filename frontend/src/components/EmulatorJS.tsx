@@ -65,7 +65,7 @@ const EmulatorJS: React.FC<EmulatorJSProps> = ({
 
     // EmulatorJS 설정
     window.EJS_player = '#game';
-    window.EJS_gameUrl = gameUrl || `./games/${gameConfig.gameFile}`;
+    window.EJS_gameUrl = gameUrl || `./${gameConfig.gamePath}`;
     window.EJS_core = core || gameConfig.core;
     window.EJS_gameName = gameName || gameConfig.name;
     window.EJS_color = color;
