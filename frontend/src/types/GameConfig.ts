@@ -220,9 +220,9 @@ export const gameSettings: GameConfig[] = [
     version: "Japan",
     console: 'snes',
     core: 'snes9x',
-    gameFile: "Super Bomberman 5 Gold Cartridge (J) .zip",
-    gamePath: "games/snes/Super Bomberman 5 Gold Cartridge (J) .zip",
-    description: "허드슨의 봄버맨 시리즈 - ZIP 압축 파일 테스트용"
+    gameFile: "Super Bomberman 5 Gold Cartridge (J) [!].smc",
+    gamePath: "games/snes/Super Bomberman 5 Gold Cartridge (J) [!].smc",
+    description: "허드슨의 봄버맨 시리즈 - 클래식 액션 퍼즐 게임"
   },
   {
     id: 'metal-slug-advance-gba',
