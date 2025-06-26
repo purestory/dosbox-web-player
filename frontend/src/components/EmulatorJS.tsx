@@ -42,34 +42,7 @@ const EmulatorJS: React.FC<EmulatorJSProps> = ({
   const gameRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // IndexedDB 충돌 방지를 위한 임시 해결책
-    const originalIndexedDB = window.indexedDB;
-    const originalIDBOpenDBRequest = window.IDBOpenDBRequest;
-    
-    // EmulatorJS IndexedDB 오류 방지
-    const safeIndexedDB = {
-      ...originalIndexedDB,
-      open: function(name: string, version?: number) {
-        console.log('IndexedDB open request:', name, version);
-        try {
-          return originalIndexedDB.open(name, version);
-        } catch (error) {
-          console.warn('IndexedDB open failed, creating mock:', error);
-          // 실패 시 mock 객체 반환
-          return {
-            onsuccess: null,
-            onerror: null,
-            onupgradeneeded: null,
-            result: null,
-            error: null,
-            readyState: 'done'
-          } as any;
-        }
-      }
-    };
-    
-    // 임시로 안전한 IndexedDB로 교체
-    (window as any).indexedDB = safeIndexedDB;
+    // IndexedDB 오류 전역 처리 (읽기 전용 속성이므로 오류 억제 방식 사용)
     
     // 언어팩 요청 차단
     const originalFetch = window.fetch;
@@ -159,8 +132,6 @@ const EmulatorJS: React.FC<EmulatorJSProps> = ({
     return () => {
       document.body.removeChild(script);
       window.fetch = originalFetch;
-      // IndexedDB 원복
-      (window as any).indexedDB = originalIndexedDB;
       // 오류 핸들러 원복
       console.error = originalConsoleError;
       window.removeEventListener('unhandledrejection', handleUnhandledRejection);
